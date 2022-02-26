@@ -1,0 +1,21 @@
+{{#each big}}
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {{#each this}}
+        <div class="col">
+            <div class="card h-100">
+                <img src= {{this.img}} class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title"> {{this.tit}} </h5>
+                    <p class="card-text"> {{this.info}} </p>
+                </div>
+                <div class="card-footer">
+                    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                        <button type="button" class="btn btn-dark">Add to cart</button>
+                        <button type="button" class="btn btn-danger">ignore</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{/each}}
+</div>
+{{/each}}
