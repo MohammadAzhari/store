@@ -8,14 +8,34 @@ const Item = require('../model/items');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  console.log(req.session);
-  console.log(req.user);
-  res.render('index', { title: 'MA store' });
+  res.render('index', { title: 'MA store' , ishbs : req.isAuthenticated() });
 });
 
-router.get('/signin', function(req, res, next) { 
+const isSinged = (req , res , next)=>{
+  if(!req.isAuthenticated()) {
+    req.flash('gosign' , 'you are not signed in')
+    res.redirect('gosign');
+    return ;
+  }
+  next();
+}
+
+const isNotSinged = (req , res , next)=>{
+  if(req.isAuthenticated()) {
+    res.redirect('/');
+    return ;
+  }
+  next();
+}
+
+router.get('/logout' , isSinged , (req,res,next)=>{
+  req.logOut() ;
+  res.redirect('/');
+})
+
+router.get('/signin', isNotSinged , function(req, res, next) { 
   let errMsg = req.flash('signin') ;
-  res.render('signin' ,{list : errMsg});
+  res.render('signin' ,{list : errMsg , ishbs : req.isAuthenticated()});
 });
 
 const comps = new Array() ;
@@ -62,18 +82,12 @@ for (let i=0 ; i<comps.length ; i+=3){
 
 router.get('/gosign' , (req,res,next)=>{
   let seccessMsg = req.flash('gosign');
-  res.render('gosign' , {tit : seccessMsg});
+  res.render('gosign' , {tit : seccessMsg , ishbs : req.isAuthenticated()});
 });
 
-router.get('/test', (req , res , next)=>{
-  if(!req.isAuthenticated()) {
-    req.flash('gosign' , 'you are not signed in')
-    res.redirect('gosign');
-    return ;
-  }
-  next();
-} , function(req, res, next) {
-  res.render('test', { list: comps , big : big });
+
+router.get('/test', isSinged , function(req, res, next) {
+  res.render('test', { list: comps , big : big , ishbs : req.isAuthenticated()});
 });
 
 
@@ -130,7 +144,7 @@ router.post('/signin' , [
   }
 });*/
 
-router.get('/signup', function(req, res, next) {
+router.get('/signup', isNotSinged , function(req, res, next) {
   let msgErr = req.flash('error'); 
   res.render('signup' ,{list : msgErr});
 });

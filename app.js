@@ -1,3 +1,4 @@
+require('dotenv').config() ;
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -7,6 +8,8 @@ var mongoose = require('mongoose');
 var session = require('express-session');
 var flash = require('connect-flash');
 var passport = require('passport');
+
+
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');

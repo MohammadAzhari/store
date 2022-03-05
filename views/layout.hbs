@@ -4,27 +4,33 @@
     <title>{{title}}</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <link rel="stylesheet" href="/stylesheets/boot.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   </head>
   <body>
       <nav class="navbar navbar-dark bg-dark navbar-expand-lg">
   <div class="container-fluid">
-    <a class="navbar-brand" href="/"><i class="fa-solid fa-chess">MAzhari store</i></a>
+    <a class="navbar-brand" href="/"><i class="fa-solid fa-cart-shopping-fast"></i><i class="fa-solid fa-chess">MAzhari store</i></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav" style="padding-left: 70%;">
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="/">Home</a>
+          <a class="nav-link active" aria-current="page" href="/">about</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="signup">singup</a>
+          {{#if ishbs}}
+            <a class="nav-link" href="logout">logout</a>
+        </li>
+          {{else}}
+            <a class="nav-link" href="signup">singup</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="signin">login</a>
         </li>
+          {{/if}}
         <li>
-          <button type="button" class="btn btn-warning">card</button>
+          <button type="button" class="btn btn-warning"><i class="fa-solid fa-cart-shopping-fast"></i>cart</button>
         </li>
       </ul>
     </div>
