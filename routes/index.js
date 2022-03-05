@@ -147,16 +147,16 @@ router.post('/signup', [
     return true ;
     }
   }).withMessage('password and confirm password didnt match')
-] , (req,res,next)=>{
+] , ((req,res,next)=>{
   let err = [] ;
-  signdatabase.findOne({email : req.body.email} ,(error,r)=>{
     if (!validationResult(req).isEmpty()) {
       for (let i=0 ; i<validationResult(req).errors.length ; i++){
         err.push(validationResult(req).errors[i].msg) ;
       }
       req.flash('error' , err);
       res.redirect('signup');
-    }
+      return ;
+    }  
     next();
     /*if (validationResult(req).isEmpty()) {
       if(!r){
@@ -181,8 +181,8 @@ router.post('/signup', [
       req.flash('error' , err);
       res.redirect('signup');
     }
-  */});
-} , passport.authenticate('local-signup' , {
+  */})
+ , passport.authenticate('local-signup' , {
   session : false ,
   successRedirect : 'gosign' ,
   failureRedirect : 'signup' ,

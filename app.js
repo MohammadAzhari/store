@@ -14,7 +14,7 @@ var usersRouter = require('./routes/users');
 var app = express();
 
 // connect to mongodb 
-mongoose.connect('mongodb://localhost/store' , (err)=>{
+mongoose.connect('mongodb://localhost/store' || process.env.MONGODB_URI , (err)=>{
   if(err){
     console.log(err);
   } else {
