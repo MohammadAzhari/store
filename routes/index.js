@@ -334,7 +334,7 @@ router.post('/deletecart' , (req,res,next)=>{
   Cart.deleteOne({itemId : req.body.deleteCart ,
      userCart : req.user._id } ,(err,r)=>{
     if (err) console.log(err) ;
-    res.redirect('cleardb');
+    res.redirect('usercart');
   });
 });
 
