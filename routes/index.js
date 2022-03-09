@@ -1,14 +1,43 @@
 var express = require('express');
 var router = express.Router();
-const signdatabase = require('../model/sign');
+const Signdatabase = require('../model/sign');
 const {check , validationResult} = require('express-validator');
 const flash = require('connect-flash/lib/flash');
 const passport = require('passport');
-const Item = require('../model/items');
+const Product = require('../model/products');
+const Cart = require('../model/cart');
 
+const isAdmin = (req , res , next)=>{
+  console.log(req.user._id != '6228a3353dfb48d5f199bc70');
+  if(req.user._id != '6228a3353dfb48d5f199bc70') {
+    res.redirect('/') ;
+    return 1 ;
+  } 
+  next();
+}
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'MA store' , ishbs : req.isAuthenticated() });
+  let comps = [] ;
+  let big = [] ;
+  let admin = false ;
+  Product.find({} ,(err,r)=>{
+    if (err) console.log(err) ;
+    for(let i=0 ; i<r.length ; i++) {
+      comps.push(r[i]);
+    }
+    for(let i=0 ; i<comps.length ; i+=3){
+      big.push(comps.slice(i,i+3));
+    }
+    if (req.isAuthenticated()) {
+      if (req.user._id == '6228a3353dfb48d5f199bc70') {
+        admin = true ;
+      }
+    }
+  res.render('index', { title: 'MA store' ,
+    big : big ,
+    ishbs : req.isAuthenticated() ,
+    admin : admin });
+  });
 });
 
 const isSinged = (req , res , next)=>{
@@ -38,7 +67,7 @@ router.get('/signin', isNotSinged , function(req, res, next) {
   res.render('signin' ,{list : errMsg , ishbs : req.isAuthenticated()});
 });
 
-const comps = new Array() ;
+/*const comps = new Array() ;
 comps[0] = {
   tit : 'first' ,
   info : '1$' ,
@@ -78,7 +107,7 @@ comps[6] = {
 let big = [];
 for (let i=0 ; i<comps.length ; i+=3){
   big.push(comps.slice(i,i+3)) ;
-}
+}*/
 
 router.get('/gosign' , (req,res,next)=>{
   let seccessMsg = req.flash('gosign');
@@ -87,7 +116,18 @@ router.get('/gosign' , (req,res,next)=>{
 
 
 router.get('/test', isSinged , function(req, res, next) {
-  res.render('test', { list: comps , big : big , ishbs : req.isAuthenticated()});
+  let comps = [] ;
+  let big = [] ;
+  Product.find({} ,(err,r)=>{
+    if (err) console.log(err) ;
+    for(let i=0 ; i<r.length ; i++) {
+      comps.push(r[i]);
+    }
+    for(let i=0 ; i<comps.length ; i+=3){
+      big.push(comps.slice(i,i+3));
+      res.render('test', { list: comps , big : big , ishbs : req.isAuthenticated()});
+    }
+  });
 });
 
 
@@ -114,7 +154,7 @@ router.post('/signin' , [
   } 
   next();
 } , passport.authenticate('local-signin' , {
-  successRedirect : '/test' ,
+  successRedirect : '/' ,
   failureRedirect : '/signin' ,
   failureFlash : true  
 })); /*[
@@ -202,6 +242,128 @@ router.post('/signup', [
   failureRedirect : 'signup' ,
   failureFlash : true 
 }));
+
+router.get('/mongo' , isAdmin , (req,res,next)=>{
+  let mongoArr = req.flash('mongo') ;
+  console.log(req.user._id);
+  res.render('mongo' , {arr : mongoArr});
+});
+
+router.post('/mongoadd' , (req,res,next)=>{
+  const product = new Product({
+    productName : req.body.productName ,
+    productPrice : req.body.productPrice ,
+    productImg : req.body.productImg 
+  });
+  product.save((err,doc)=>{
+    if (err) console.log(err) ;
+    res.redirect('mongoget') ;
+  });
+});
+
+router.get('/mongoget' , (req,res,next)=>{
+  arr = [] ;
+  Product.find({} , (err,r)=>{
+    for (let i=0 ; i<r.length ; i++){
+      arr.push(r[i]);
+    }
+    req.flash('mongo' , arr) ;
+    res.redirect('mongo') ;
+  });
+});
+
+router.post('/mongodelete' , (req,res,next)=>{
+  Product.deleteOne({_id : req.body.del} , (err,r)=>{
+    if (err) console.log (err) ;
+    res.redirect('cleardb') ;
+  })
+})
+
+router.get('/cart/:id/:price' , isSinged , (req,res,next)=>{
+  const cart = new Cart({
+    userCart : req.user._id ,
+    itemId : req.params.id 
+  });
+  cart.save((err,r)=>{
+    res.redirect('/');
+  })
+});
+
+router.get('/usercart' , isSinged , (req,res,next)=>{
+  Cart.find({userCart:req.user._id} , (err,r)=>{
+    if(err) console.log(err) ;
+    console.log(r.length);
+    let cartHbs = [] ;
+    let totalPrice = 0 ;
+    if(r.length === 0) {
+      res.render('cart' , {cart : cartHbs,
+      totalPrice : totalPrice , 
+      ishbs : req.isAuthenticated()});
+    } else {
+      for(let i=0 ; i<r.length ; i++){
+       // cartHbs[i] = r[i].itemId ;
+       Product.findOne({_id : r[i].itemId} , (error,doc)=>{
+        if(error) console.log(error) ;
+        cartHbs.push(doc);
+        totalPrice += doc.productPrice ;
+        if (i === r.length-1) {
+          let cartFormated = [] ;
+          for(let j=0 ; j<cartHbs.length ; j+=4){
+           cartFormated.push(cartHbs.slice(j,j+4));
+          }
+          res.render('cart' , {cart : cartFormated ,
+             totalPrice : totalPrice , 
+             ishbs : req.isAuthenticated()});
+         }
+        });
+      }
+    }
+  });
+});
+
+router.get('/cleardb' , isAdmin , (req,res,next)=>{
+  Cart.deleteMany((err,r)=>{
+    if(err) console.log(err) ;
+    res.redirect('mongoget');
+  });
+});
+
+router.post('/deletecart' , (req,res,next)=>{
+  Cart.deleteOne({itemId : req.body.deleteCart ,
+     userCart : req.user._id } ,(err,r)=>{
+    if (err) console.log(err) ;
+    res.redirect('cleardb');
+  });
+});
+
+router.get('/admin' , isAdmin , (req,res,next)=>{
+  res.render ('admin' , {ishbs : req.isAuthenticated()})
+});
+
+router.get('/adminusers' , isAdmin , (req,res,next)=>{
+  Signdatabase.find({} , (err , r)=>{
+    if (err) console.log(err) ;
+    arr = [] ;
+    for(let i=0 ; i<r.length ; i++){
+      arr.push(r[i]);
+    }
+    req.flash('adminusers' , arr) ;
+    res.redirect('adminuser') ;
+  });
+});
+
+router.get('/adminuser' , isAdmin , (req,res,next)=>{
+  let usersArray = req.flash('adminusers');
+  res.render('users' , {arr : usersArray} ) ;
+});
+
+router.post('/userdelete' , (req,res,next)=>{
+  Signdatabase.deleteOne({_id : req.body.del} , (err,r)=>{
+    if (err) console.log (err) ;
+    res.redirect('adminusers') ;
+  });
+});
+
 
 
 module.exports = router;

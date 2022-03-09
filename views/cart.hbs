@@ -1,0 +1,33 @@
+<div style="background-color:rgb(17, 4, 49);">
+<div class="mb-3">
+    <div class="alert alert-primary" role="alert">
+        <h1> shoppping cart items </h1>
+    </div>
+</div>
+{{#each cart}}
+<div class="row row-cols-1 row-cols-md-4 g-4">
+    {{#each this}}
+        <div class="col">
+            <div class="card h-100">
+                <img src= {{this.productImg}} class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title"> {{this.productName}} </h5>
+                    <p class="card-text"> {{this.productPrice}} $ </p>
+                </div>
+                <div class="card-footer">
+                    <form action="/deletecart" method="post">
+                        <input type="hidden" name="deleteCart" value="{{this._id}}">
+                        <button type="submit" class="btn btn-danger">remove</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {{/each}}
+</div>
+{{/each}}
+<div class="mb-3">
+    <div class="alert alert-primary" role="alert">
+        <h1>Total price : {{totalPrice}}</h1>
+    </div>
+</div>
+</div>

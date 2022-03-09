@@ -1,0 +1,47 @@
+<div class="alert alert-secondary" role="alert"><a href="/">back to home page</a></div>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">number</th>
+      <th scope="col">productName</th>
+      <th scope="col">productPrice</th>
+      <th scope="col">productImg</th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  {{#each arr as |a num|}}
+  <tbody>
+    <tr>
+      <th scope="row"> #{{num}} </th>
+      <td> {{this.productName}} </td>
+      <td>{{this.productPrice}}</td>
+      <td>{{this.productImg}}</td>
+      <td><form action="mongodelete" method="post"><input type="hidden" value="{{this._id}}" name="del"><button type="submit" class="btn btn-danger">delete</button></form></td>
+    </tr>
+  </tbody>
+  {{/each}}
+</table>
+<div class="alert alert-secondary" role="alert">
+  add new product
+  <form action="mongoadd" method="post">
+    <div class="form-floating mb-3">
+        <input type="text" class="form-control" name="productName">
+        <label for="floatingInput">productName</label>
+    </div>
+    <div class="form-floating">
+        <input type="text" class="form-control" name="productPrice">
+        <label for="floatingInput">productPrice</label>
+    </div>
+    <br>
+    <div class="form-floating">
+        <input type="text" class="form-control" name="productImg">
+        <label for="floatingInput">productImg</label>
+    </div>
+    <br>
+    <button type="submit" class="btn btn-primary">add</button>
+  </form>
+  <br>
+  <form action="mongoget" method="get">
+    <button type="submit" class="btn btn-primary">update</button>
+  </form>
+</div>

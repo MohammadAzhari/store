@@ -18,11 +18,12 @@
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="/">about</a>
         </li>
+        {{#if ishbs}}
         <li class="nav-item">
-          {{#if ishbs}}
-            <a class="nav-link" href="logout">logout</a>
+            <a class="btn btn-danger" href="logout">logout</a>
         </li>
           {{else}}
+        <li>
             <a class="nav-link" href="signup">singup</a>
         </li>
         <li class="nav-item">
@@ -30,7 +31,7 @@
         </li>
           {{/if}}
         <li>
-          <button type="button" class="btn btn-warning"><i class="fa-solid fa-cart-shopping-fast"></i>cart</button>
+          <a href="usercart" type="button" class="btn btn-warning"><i class="fa-solid fa-cart-shopping-fast"></i>cart</a>
         </li>
       </ul>
     </div>
