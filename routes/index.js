@@ -7,9 +7,11 @@ const passport = require('passport');
 const Product = require('../model/products');
 const Cart = require('../model/cart');
 
+//mongodb+srv://mazhari:2875@cluster0.vokuh.mongodb.net/store
 const isAdmin = (req , res , next)=>{
-  console.log(req.user._id != '6228a3353dfb48d5f199bc70');
-  if(req.user._id != '6228a3353dfb48d5f199bc70') {
+  console.log(req.user.email != 'admin@admin.com' );
+  //console.log(req.user._id != '6228a3353dfb48d5f199bc70');
+  if(req.user.email != 'admin@admin.com') {
     res.redirect('/') ;
     return 1 ;
   } 
@@ -29,7 +31,7 @@ router.get('/', function(req, res, next) {
       big.push(comps.slice(i,i+3));
     }
     if (req.isAuthenticated()) {
-      if (req.user._id == '6228a3353dfb48d5f199bc70') {
+      if (req.user.email == 'admin@admin.com') {
         admin = true ;
       }
     }
